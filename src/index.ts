@@ -1,6 +1,10 @@
 /**
  * lforla-honeypot — entry point.
  *
+ * Use the default (unconfigured) instance for a quick start, or build a
+ * site-tuned instance with `createHoneypot(config)` for convincing decoys
+ * that match your own brand, domains and stack.
+ *
  * Core is framework-agnostic (`resolveDecoy` / `handleProbe`). Framework
  * adapters for Hono and Express are provided as optional, type-only imports.
  */
@@ -10,16 +14,24 @@ import type { NextFunction, Request as ExpressRequest, Response as ExpressRespon
 
 import {
   HONEYPOT_CANARY,
+  createHoneypot,
   resolveDecoy,
   type DecoyCategory,
+  type HoneypotConfig,
   type ResolveDecoyOptions,
 } from "./decoys";
 
 export {
   HONEYPOT_CANARY,
+  createHoneypot,
   resolveDecoy,
   type Decoy,
   type DecoyCategory,
+  type Honeypot,
+  type HoneypotConfig,
+  type HoneypotDatabaseConfig,
+  type HoneypotDomainsConfig,
+  type HoneypotSecretsConfig,
   type ResolveDecoyOptions,
 } from "./decoys";
 
@@ -54,15 +66,18 @@ const DECOY_HEADERS: Record<string, string> = {
  * when the path is legitimate. Returns a plain `{ status, headers, body }`
  * object that any HTTP layer can send.
  */
-export function handleProbe(ctx: ProbeContext): ProbeOutcome | null {
-  const decoy = resolveDecoy(ctx.path);
+export function handleProbe(ctx: ProbeContext, config?: HoneypotConfig): ProbeOutcome | null {
+  const hp = config ? createHoneypot(config) : null;
+  const resolve = hp ? hp.resolveDecoy : resolveDecoy;
+  const canary = hp ? hp.HONEYPOT_CANARY : HONEYPOT_CANARY;
+  const decoy = resolve(ctx.path);
   if (!decoy) return null;
   return {
     status: 200,
     headers: { ...DECOY_HEADERS, "Content-Type": decoy.contentType },
     body: decoy.content,
     category: decoy.category,
-    canary: HONEYPOT_CANARY,
+    canary,
   };
 }
 
@@ -71,6 +86,8 @@ export function handleProbe(ctx: ProbeContext): ProbeOutcome | null {
 // ============================================================================
 
 export interface HonoHoneypotOptions {
+  /** Passed to createHoneypot() when provided; otherwise uses defaults. */
+  config?: HoneypotConfig;
   excludePaths?: string[];
   onHit?: (hit: { path: string; category: DecoyCategory; canary: string }) => void;
 }
@@ -80,14 +97,18 @@ export interface HonoHoneypotOptions {
  * and BEFORE the 404 handler:
  *
  *   import { honoHoneypot } from "lforla-honeypot";
- *   app.use("*", honoHoneypot());
+ *   app.use("*", honoHoneypot({ config: { brand: "MyApp", domains: { app: "https://myapp.io" } } }));
  */
 export function honoHoneypot(options: HonoHoneypotOptions = {}) {
+  const hp = options.config ? createHoneypot(options.config) : null;
+  const resolve = hp ? hp.resolveDecoy : resolveDecoy;
+  const canary = hp ? hp.HONEYPOT_CANARY : HONEYPOT_CANARY;
+
   return async (c: HonoContext, next: HonoNext): Promise<Response | void> => {
-    const decoy = resolveDecoy(c.req.path, { excludePaths: options.excludePaths });
+    const decoy = resolve(c.req.path, { excludePaths: options.excludePaths });
     if (!decoy) return next();
 
-    options.onHit?.({ path: c.req.path, category: decoy.category, canary: HONEYPOT_CANARY });
+    options.onHit?.({ path: c.req.path, category: decoy.category, canary });
 
     c.status(200);
     c.header("Content-Type", decoy.contentType);
@@ -104,6 +125,8 @@ export function honoHoneypot(options: HonoHoneypotOptions = {}) {
 // ============================================================================
 
 export interface ExpressHoneypotOptions {
+  /** Passed to createHoneypot() when provided; otherwise uses defaults. */
+  config?: HoneypotConfig;
   excludePaths?: string[];
   onHit?: (hit: { path: string; category: DecoyCategory; canary: string }) => void;
 }
@@ -112,17 +135,21 @@ export interface ExpressHoneypotOptions {
  * Express middleware. Mount AFTER your real routes, BEFORE error/404 handlers:
  *
  *   import { expressHoneypot } from "lforla-honeypot";
- *   app.use(expressHoneypot());
+ *   app.use(expressHoneypot({ config: { brand: "MyApp" } }));
  */
 export function expressHoneypot(options: ExpressHoneypotOptions = {}) {
+  const hp = options.config ? createHoneypot(options.config) : null;
+  const resolve = hp ? hp.resolveDecoy : resolveDecoy;
+  const canary = hp ? hp.HONEYPOT_CANARY : HONEYPOT_CANARY;
+
   return (req: ExpressRequest, res: ExpressResponse, next: NextFunction): void => {
-    const decoy = resolveDecoy(req.path, { excludePaths: options.excludePaths });
+    const decoy = resolve(req.path, { excludePaths: options.excludePaths });
     if (!decoy) {
       next();
       return;
     }
 
-    options.onHit?.({ path: req.path, category: decoy.category, canary: HONEYPOT_CANARY });
+    options.onHit?.({ path: req.path, category: decoy.category, canary });
 
     res.status(200);
     res.set("Content-Type", decoy.contentType);
