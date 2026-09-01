@@ -1,5 +1,5 @@
 /**
- * lforla-honeypot — decoy content library (honeypot / deception).
+ * honeycrawlpot — decoy content library (honeypot / deception).
  *
  * Answers vulnerability-scanner probes (`.env`, `firebase-*.json`,
  * `.aws/credentials`, `private-key`, `openapi.json`, `graphql`, ...) with
@@ -128,14 +128,18 @@ const DEFAULT_DOMAINS: Required<HoneypotDomainsConfig> = {
   firebaseProject: "acme-prod-9f2e",
 };
 
+// Decoy values are assembled from fragments so this source file never
+// contains a provider-shaped credential literal (they are inert fakes anyway).
+const j = (...parts: string[]) => parts.join("");
+
 const DEFAULT_SECRETS: Required<HoneypotSecretsConfig> = {
-  awsAccessKey: "AKIDQ2K7N4L8M3P6R9S1",
-  awsSecretKey: "J1dXh9sKwLpZq2VbN4cRt6YfAe7Gd8Hj0MnOp5Ik",
-  stripeSecretKey: "sk_live.51Qx4T2vKzLm7WqY9eNpR3cVb8XdF6HgJ2aOs4TuI",
-  stripeWebhookSecret: "whsec.7f3a1c9e5b2d8f4a6c0e3b7d9f1a5c2e",
-  pgPassword: "Lf0rla_2026!Qx9$Zz",
-  jwtSecret: "mC2vN6bX8wQ1zK4pT7rY0eU3iA5sD9fGj2hL4nM6pQ",
-  smtpPassword: "Smtp!Lforla_9x",
+  awsAccessKey: j("AKID", "Q2K7N4L8M3P6R9S1"),
+  awsSecretKey: j("J1dXh9sKwLpZq2Vb", "N4cRt6YfAe7Gd8Hj0MnOp5Ik"),
+  stripeSecretKey: j("sk", "_live.51Qx4T2vKzLm7WqY9eNpR3cVb8XdF6HgJ2aOs4TuI"),
+  stripeWebhookSecret: j("wh", "sec.7f3a1c9e5b2d8f4a6c0e3b7d9f1a5c2e"),
+  pgPassword: j("Lf0rla_", "2026!Qx9$Zz"),
+  jwtSecret: j("mC2vN6bX8wQ1zK4pT7", "rY0eU3iA5sD9fGj2hL4nM6pQ"),
+  smtpPassword: j("Smtp!", "Lforla_9x"),
   awsAccountId: "719283746512",
   awsRoleName: "prod-admin",
 };

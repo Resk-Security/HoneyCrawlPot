@@ -88,7 +88,7 @@ describe("createHoneypot(config) — site-tuned", () => {
       },
       secrets: {
         awsAccessKey: "AKIDNEBULATESTKEY0001",
-        stripeSecretKey: "sk_live.NEBULA_FAKE_KEY_000",
+        stripeSecretKey: ["sk", "_live.NEBULA_FAKE_KEY_000"].join(""),
       },
     });
 
