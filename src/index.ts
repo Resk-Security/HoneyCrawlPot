@@ -1,5 +1,5 @@
 /**
- * lforla-honeypot — entry point.
+ * honeycrawlpot — entry point.
  *
  * Use the default (unconfigured) instance for a quick start, or build a
  * site-tuned instance with `createHoneypot(config)` for convincing decoys
@@ -96,7 +96,7 @@ export interface HonoHoneypotOptions {
  * Hono middleware. Mount AFTER your real API routes so they take precedence,
  * and BEFORE the 404 handler:
  *
- *   import { honoHoneypot } from "lforla-honeypot";
+ *   import { honoHoneypot } from "honeycrawlpot";
  *   app.use("*", honoHoneypot({ config: { brand: "MyApp", domains: { app: "https://myapp.io" } } }));
  */
 export function honoHoneypot(options: HonoHoneypotOptions = {}) {
@@ -134,7 +134,7 @@ export interface ExpressHoneypotOptions {
 /**
  * Express middleware. Mount AFTER your real routes, BEFORE error/404 handlers:
  *
- *   import { expressHoneypot } from "lforla-honeypot";
+ *   import { expressHoneypot } from "honeycrawlpot";
  *   app.use(expressHoneypot({ config: { brand: "MyApp" } }));
  */
 export function expressHoneypot(options: ExpressHoneypotOptions = {}) {
