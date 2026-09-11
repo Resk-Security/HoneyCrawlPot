@@ -10,6 +10,8 @@
 
 🔗 Part of [RESK Security](https://resk.fr) — tools, blog and docs at [resk.fr](https://resk.fr)
 
+📚 Guide: [AI Pentesting](https://resk.fr/pages/security/ai-pentesting.html)
+
 ## Installation
 
 ```bash
