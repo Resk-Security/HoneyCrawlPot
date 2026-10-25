@@ -8,6 +8,8 @@
 [![Bun Compatible](https://img.shields.io/badge/JS-Bun-f5f5f5)](https://bun.sh)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6)](https://www.typescriptlang.org)
 
+[![Documentation](https://img.shields.io/badge/docs-resk.fr%2Fdocs%2Fhoneycrawlpot-orange)](https://resk.fr/docs/honeycrawlpot/)
+
 🔗 Part of [RESK Security](https://resk.fr) — tools, blog and docs at [resk.fr](https://resk.fr)
 
 📚 Guide: [AI Pentesting](https://resk.fr/pages/security/ai-pentesting.html)
