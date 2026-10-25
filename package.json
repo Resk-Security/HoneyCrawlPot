@@ -1,6 +1,6 @@
 {
   "name": "honeycrawlpot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Serve realistic decoy files (fake secrets + prompt injections) to AI/LLM-powered vulnerability scanners. Zero-dependency, framework-agnostic.",
   "keywords": [
     "honeypot",
