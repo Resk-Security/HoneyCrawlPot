@@ -16,5 +16,9 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run type-check
       - run: bun test
+      - run: bun run build
+      - name: Node ESM smoke test
+        run: |
+          node --input-type=module -e "import('./dist/index.js').then(m => { if (typeof m.handleProbe !== 'function') throw new Error('handleProbe export missing'); })"
       - name: Dependency audit
         run: bun audit --audit-level=high

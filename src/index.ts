@@ -19,7 +19,7 @@ import {
   type DecoyCategory,
   type HoneypotConfig,
   type ResolveDecoyOptions,
-} from "./decoys";
+} from "./decoys.js";
 
 export {
   HONEYPOT_CANARY,
@@ -33,7 +33,7 @@ export {
   type HoneypotDomainsConfig,
   type HoneypotSecretsConfig,
   type ResolveDecoyOptions,
-} from "./decoys";
+} from "./decoys.js";
 
 // ============================================================================
 // Framework-agnostic probe handler
